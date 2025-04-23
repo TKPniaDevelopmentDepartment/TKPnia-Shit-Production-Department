@@ -55,7 +55,7 @@ const fetchFiles = async () => {
         const response = await axiosInstance.get(`/repos/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/contents/novels?ref=main`);
 
         fileList.value = response.data
-            .filter((file: FileItem) => file.type === 'file' && file.name.endsWith('.md'))
+            .filter((file: FileItem) => file.type === 'file' && file.name.endsWith('.md') && file.name !== 'README.md')
             .sort((a: FileItem, b: FileItem) => a.name.localeCompare(b.name));
     } catch (err) {
         console.error(err);
