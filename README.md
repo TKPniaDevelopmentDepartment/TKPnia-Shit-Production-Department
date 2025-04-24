@@ -1,7 +1,4 @@
-# TKPnia-Shit-Production-Department
-基于vite+vue3+typescript的前端项目
-
-## INVASION
+# INVASION
 哈哈，觉得眼熟？😃  
 这样的场景，此时此刻正在星系各处上演✋😮🖐️  
 下一个可能就是你👈😐  
