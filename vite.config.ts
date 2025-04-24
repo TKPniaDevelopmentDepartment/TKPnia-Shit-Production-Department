@@ -26,14 +26,23 @@ export default defineConfig({
             "@": path.resolve(__dirname, './src')
         }
     },
-    server: {
+    /*server: {
         proxy: {
-          '/': {
-            target: 'https://tkpniadevelopmentdepartment.github.io/TKPnia-Shit-Production-Department/',
-            // 更改请求的origin为代理服务器的origin，以便与目标服务器交互
-            changeOrigin: true,
-            rewrite: (path) => path.replace(/^\//, '')
-          }
+            '/': {
+                target: 'https://tkpniadevelopmentdepartment.github.io/TKPnia-Shit-Production-Department/',
+                // 更改请求的origin为代理服务器的origin，以便与目标服务器交互
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\//, '')
+            }
         }
-      }
+    }*/
+    server: {
+        proxy: process.env.NODE_ENV === 'development' ? {} : {
+            '/': {
+                target: 'https://tkpniadevelopmentdepartment.github.io/TKPnia-Shit-Production-Department/',
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\//, '')
+            }
+        }
+    }
 })

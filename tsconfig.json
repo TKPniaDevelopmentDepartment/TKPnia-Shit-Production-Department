@@ -13,5 +13,5 @@
         "target": "ESNext",
         "lib": ["ESNext", "DOM"],
         "types": ["node"]
-    }
+    },
 }
