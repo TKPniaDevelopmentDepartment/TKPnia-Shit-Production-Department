@@ -71,6 +71,23 @@ const fetchFileContent = async (path: string) => {
             gfm: true,
             breaks: true,
         });
+        // TODO 直接从url获取图片的Base64内容然后显示(将图片的原始地址设为github的地址有问题，无法直接显示)
+        // 没做完先注释了(貌似gitpage有请求速度上限)
+        /*
+        const imgRegex = /<img\b[^>]*src="([^"]*)"[^>]*>/g;
+        let match;
+        const imgUrls = [];
+
+        while ((match = imgRegex.exec(html)) !== null) {
+            imgUrls.push(match[1]);
+        }
+        for (const imgUrl of imgUrls) {
+            const repoPath = imgUrl.replace('https://github.com/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/blob/main/', '');
+            const imgResponse = await axiosInstance.get(`/repos/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/contents/${repoPath}?ref=main`);
+            const imgBase64 = imgResponse.data.content; // GitHub API直接返回Base64内容
+            const imgType = repoPath.split('.').pop(); // 获取图片类型
+            html = html.replace(imgUrl, `data:image/${imgType};base64,${imgBase64}`);
+        }*/
         const title = response.data.name.replace('.md', '');
         return { content: html, title };
     } catch (err) {
