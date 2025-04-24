@@ -67,13 +67,12 @@ const fetchFileContent = async (path: string) => {
         const uint8Array = new Uint8Array(atob(base64Content).split('').map(c => c.charCodeAt(0)));
         const decoder = new TextDecoder('utf-8');
         const content = decoder.decode(uint8Array);
-        const html = await marked.parse(content, {
+        let html = await marked.parse(content, {
             gfm: true,
             breaks: true,
         });
-        // TODO 直接从url获取图片的Base64内容然后显示(将图片的原始地址设为github的地址有问题，无法直接显示)
-        // 没做完先注释了(貌似gitpage有请求速度上限)
-        /*
+        // 直接从url获取图片的Base64内容然后显示(将图片的原始地址设为github的地址有问题，无法直接显示)
+
         const imgRegex = /<img\b[^>]*src="([^"]*)"[^>]*>/g;
         let match;
         const imgUrls = [];
@@ -87,7 +86,7 @@ const fetchFileContent = async (path: string) => {
             const imgBase64 = imgResponse.data.content; // GitHub API直接返回Base64内容
             const imgType = repoPath.split('.').pop(); // 获取图片类型
             html = html.replace(imgUrl, `data:image/${imgType};base64,${imgBase64}`);
-        }*/
+        }
         const title = response.data.name.replace('.md', '');
         return { content: html, title };
     } catch (err) {
