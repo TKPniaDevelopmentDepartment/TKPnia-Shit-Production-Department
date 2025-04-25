@@ -19,7 +19,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
-import { marked } from 'marked';
 
 const fileList = ref<FileItem[]>([]);
 const selectedFile = ref<MarkdownContent | null>(null);
