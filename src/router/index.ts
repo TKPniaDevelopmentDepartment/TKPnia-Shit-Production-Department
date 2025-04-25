@@ -3,6 +3,7 @@ import type { RouteRecordRaw } from 'vue-router'
 
 import Home from '../views/Home.vue'
 import Novels from '../views/Novels.vue'
+import Images from '../views/Images.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -14,6 +15,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/novels',
     name: 'Novels',
     component: Novels
+  },
+  {
+    path: '/images',
+    name: 'Images',
+    component: Images
   }
 ]
 const router = createRouter({
