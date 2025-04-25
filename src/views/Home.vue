@@ -32,9 +32,9 @@ export default {
 
 .rmr {
     display: block;
-    margin: -20% auto;
+    margin: -15% auto;
     width: 75%;
-    animation: float 10s ease-in-out infinite;
+    animation: float 5s ease-in-out infinite;
 }
 
 .link-container {
@@ -64,6 +64,6 @@ export default {
 
 @keyframes float {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+    50% { transform: translateY(-5px); }
 }
 </style>
