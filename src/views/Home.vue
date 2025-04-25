@@ -7,7 +7,8 @@
             <img src="/rmr.svg" class="rmr" />
         </div>
         <div class="link-container">
-            <a href="https://afdian.com/a/TKPnia_D_Department" class="vm50">V我50吃KFC</a>
+            <a href="https://afdian.com/a/TKPnia_D_Department" class="vm50">V我50吃KFC</a><br/>
+            <a href="https://afdian.com/a/TKPniadevelopment" class="vm50">V他50吃KFC</a><br/>
         </div>
     </div>
 </template>
