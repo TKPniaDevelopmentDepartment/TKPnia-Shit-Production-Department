@@ -27,6 +27,12 @@ export default {
 }
 </script>
 <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 .app {
     display: flex;
     flex-direction: column;
@@ -43,7 +49,7 @@ export default {
 
 .nav-item {
     cursor: pointer;
-    padding: 10px;
+    padding: 5px;
     transition: background-color 0.3s;
 }
 

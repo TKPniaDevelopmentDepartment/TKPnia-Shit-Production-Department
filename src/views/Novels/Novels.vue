@@ -1,17 +1,17 @@
 <template>
-    <div class="container">
-        <div class="file-list">
+    <div class="n-container">
+        <div class="n-file-list">
             <h2>目录</h2>
             <ul>
-                <li v-for="file in fileList" :key="file.sha" class="file-item" @click="handleFileClick(file)">
+                <li v-for="file in fileList" :key="file.sha" class="n-file-item" @click="handleFileClick(file)">
                     {{ file.name.replace('.md', '') }}
                 </li>
             </ul>
         </div>
-        <div v-if="selectedFile" class="markdown-content">
+        <div v-if="selectedFile" class="n-markdown-content">
             <div v-html="selectedFile.content"></div>
         </div>
-        <div v-if="loading" class="loading">
+        <div v-if="loading" class="n-loading">
             加载中...
         </div>
     </div>
