@@ -60,7 +60,10 @@ body::-webkit-scrollbar {
     height: 0;
 }
 /* 禁用滚动 */
-
+.content::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
 
 .content {
     flex: 1;
