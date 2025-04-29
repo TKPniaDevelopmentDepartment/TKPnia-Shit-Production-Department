@@ -31,6 +31,7 @@ export default {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    word-break: keep-all;
 }
 
 .app {
@@ -63,11 +64,6 @@ export default {
 }
 
 body::-webkit-scrollbar {
-    height: 0;
-}
-/* 禁用滚动 */
-.content::-webkit-scrollbar {
-    width: 0;
     height: 0;
 }
 

@@ -1,7 +1,7 @@
 <template>
     <div class="i-container">
+        <h2>目录</h2>
         <div class="i-file-list">
-            <h2>目录</h2>
             <ul>
                 <li v-for="file in fileList" :key="file.sha" class="i-file-item" @click="handleFileClick(file)">
                     {{ file.name.replace('.png', '') }}

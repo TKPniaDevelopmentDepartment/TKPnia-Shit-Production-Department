@@ -1,7 +1,8 @@
 <template>
     <div class="n-container">
+        <h2>目录</h2>
         <div class="n-file-list">
-            <h2>目录</h2>
+            
             <ul>
                 <li v-for="file in fileList" :key="file.sha" class="n-file-item" @click="handleFileClick(file)">
                     {{ file.name.replace('.md', '') }}
