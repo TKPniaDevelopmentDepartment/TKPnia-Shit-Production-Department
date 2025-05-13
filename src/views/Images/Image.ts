@@ -8,7 +8,7 @@ interface FileItem {
     sha: string;
 };
 
-interface MarkdownContent {
+interface ImageContent {
     content: string;
     title: string;
 };
@@ -20,9 +20,36 @@ const axiosInstance = axios.create({
     },
 });
 
+// 缓存已获取的图片内容
+const contentCache = new Map<string, ImageContent>();
+
 export const fileList = ref<FileItem[]>([]);
-export const selectedFile = ref<MarkdownContent | null>(null);
+export const selectedFile = ref<ImageContent | null>(null);
 export const loading = ref(false);
+
+// 智能排序函数
+function naturalSort(a: string, b: string): number {
+    const splitA = a.split(/(\d+)/);
+    const splitB = b.split(/(\d+)/);
+    
+    for (let i = 0; i < Math.min(splitA.length, splitB.length); i++) {
+        const aPart = splitA[i];
+        const bPart = splitB[i];
+        
+        if (i % 2 === 0) {
+            // 非数字部分比较
+            const comparison = aPart.localeCompare(bPart, 'zh-CN');
+            if (comparison !== 0) return comparison;
+        } else {
+            // 数字部分比较
+            const numA = parseInt(aPart);
+            const numB = parseInt(bPart);
+            if (numA !== numB) return numA - numB;
+        }
+    }
+    
+    return splitA.length - splitB.length;
+}
 
 const fetchFiles = async () => {
     try {
@@ -30,7 +57,7 @@ const fetchFiles = async () => {
         const response = await axiosInstance.get(`/repos/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/contents/images?ref=main`);
         fileList.value = response.data
             .filter((file: FileItem) => file.type === 'file' && file.name.endsWith('.png'))
-            .sort((a: FileItem, b: FileItem) => a.name.localeCompare(b.name));
+            .sort((a: FileItem, b: FileItem) => naturalSort(a.name, b.name));
     } catch (err) {
         console.error(err);
     } finally {
@@ -38,16 +65,28 @@ const fetchFiles = async () => {
     }
 };
 
-const fetchFileContent = async (path: string) => {
+const fetchFileContent = async (path: string): Promise<ImageContent | null> => {
+    // 检查缓存
+    if (contentCache.has(path)) {
+        return contentCache.get(path)!;
+    }
+
     try {
         loading.value = true;
         const response = await axiosInstance.get(`/repos/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/contents/${path}?ref=main`);
-        const content = response.data.content;//图片的base64编码
+        const content = response.data.content;
         const title = response.data.name.replace('.png', '');
-        const html = `<img src="data:image/png;base64,${content}" alt="${title}">`;
-        return { content: html, title };
+        
+        const result = {
+            content: `data:image/png;base64,${content}`,
+            title
+        };
+
+        // 存入缓存
+        contentCache.set(path, result);
+        return result;
     } catch (err) {
-        console.error(err);
+        console.error('获取图片内容失败:', err);
         return null;
     } finally {
         loading.value = false;

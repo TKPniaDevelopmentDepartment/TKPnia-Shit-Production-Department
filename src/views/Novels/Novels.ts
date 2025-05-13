@@ -21,6 +21,42 @@ const axiosInstance = axios.create({
     },
 });
 
+// 智能排序函数
+function naturalSort(a: string, b: string): number {
+    // 检查是否包含"主线"和"番外篇"
+    const aIsMain = a.includes('主线');
+    const bIsMain = b.includes('主线');
+    
+    // 如果一个是主线一个是番外篇，主线优先
+    if (aIsMain && !bIsMain) return -1;
+    if (!aIsMain && bIsMain) return 1;
+    
+    // 如果都是主线或都是番外篇，则按数字排序
+    const splitA = a.split(/(\d+)/);
+    const splitB = b.split(/(\d+)/);
+    
+    for (let i = 0; i < Math.min(splitA.length, splitB.length); i++) {
+        const aPart = splitA[i];
+        const bPart = splitB[i];
+        
+        if (i % 2 === 0) {
+            // 非数字部分比较
+            const comparison = aPart.localeCompare(bPart, 'zh-CN');
+            if (comparison !== 0) return comparison;
+        } else {
+            // 数字部分比较
+            const numA = parseInt(aPart);
+            const numB = parseInt(bPart);
+            if (numA !== numB) return numA - numB;
+        }
+    }
+    
+    return splitA.length - splitB.length;
+}
+
+// 缓存已获取的文件内容
+const contentCache = new Map<string, MarkdownContent>();
+
 async function fetchFiles() {
     try {
         loading.value = true;
@@ -28,7 +64,7 @@ async function fetchFiles() {
 
         fileList.value = response.data
             .filter((file: FileItem) => file.type === 'file' && file.name.endsWith('.md') && file.name !== 'README.md')
-            .sort((a: FileItem, b: FileItem) => a.name.localeCompare(b.name));
+            .sort((a: FileItem, b: FileItem) => naturalSort(a.name, b.name));
     } catch (err) {
         console.error(err);
     } finally {
@@ -37,6 +73,11 @@ async function fetchFiles() {
 }
 
 export const fetchFileContent = async (path: string): Promise<MarkdownContent | null> => {
+    // 检查缓存
+    if (contentCache.has(path)) {
+        return contentCache.get(path)!;
+    }
+
     try {
         loading.value = true;
         const response = await axiosInstance.get(
@@ -62,7 +103,8 @@ export const fetchFileContent = async (path: string): Promise<MarkdownContent | 
             imgUrls.push(match[1]);
         }
 
-        for (const imgUrl of imgUrls) {
+        // 批量获取图片内容
+        const imgPromises = imgUrls.map(async (imgUrl) => {
             const repoPath = imgUrl.replace(
                 'https://github.com/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/blob/main/',
                 ''
@@ -75,13 +117,27 @@ export const fetchFileContent = async (path: string): Promise<MarkdownContent | 
             const imgBase64 = imgResponse.data.content;
             const imgType = repoPath.split('.').pop();
             
-            html = html.replace(imgUrl, `data:image/${imgType};base64,${imgBase64}`);
+            return {
+                originalUrl: imgUrl,
+                newUrl: `data:image/${imgType};base64,${imgBase64}`
+            };
+        });
+
+        const imgResults = await Promise.all(imgPromises);
+        
+        // 替换所有图片URL
+        for (const { originalUrl, newUrl } of imgResults) {
+            html = html.replace(originalUrl, newUrl);
         }
 
-        return {
+        const result = {
             content: html,
             title: response.data.name.replace('.md', '')
         };
+
+        // 存入缓存
+        contentCache.set(path, result);
+        return result;
     } catch (err) {
         console.error('获取文件内容失败:', err);
         return null;
