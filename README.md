@@ -12,3 +12,5 @@
 成为英雄  
 成为传奇😃🤲😄  
 成为产屎之王！😃  
+# 网站链接
+[访问网站](https://tkpniadevelopmentdepartment.github.io/TKPnia-Shit-Production-Department/#/ "吃!都可以吃!")。
