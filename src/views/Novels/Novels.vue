@@ -3,11 +3,20 @@
         <div class="n-sidebar">
             <h2>目录</h2>
             <div class="n-file-list">
-                <ul>
-                    <li v-for="file in fileList" :key="file.sha" class="n-file-item" @click="handleFileClick(file)">
-                        {{ file.name.replace('.md', '') }}
-                    </li>
-                </ul>
+                <div v-for="group in chapterGroups" :key="group.title" class="n-chapter-group">
+                    <div class="n-group-header" @click="toggleGroup(group)">
+                        <span class="n-group-title">{{ group.title }}</span>
+                        <span class="n-group-toggle">{{ group.isExpanded ? '▼' : '▶' }}</span>
+                    </div>
+                    <ul v-show="group.isExpanded" class="n-chapter-list">
+                        <li v-for="file in group.chapters" 
+                            :key="file.sha" 
+                            class="n-file-item" 
+                            @click="handleFileClick(file)">
+                            {{ file.name.replace('.md', '') }}
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
         <div class="n-main">

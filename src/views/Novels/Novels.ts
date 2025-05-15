@@ -14,6 +14,12 @@ interface MarkdownContent {
     title: string;
 };
 
+interface ChapterGroup {
+    title: string;
+    chapters: FileItem[];
+    isExpanded: boolean;
+}
+
 const axiosInstance = axios.create({
     baseURL: 'https://api.github.com',
     headers: {
@@ -57,14 +63,54 @@ function naturalSort(a: string, b: string): number {
 // 缓存已获取的文件内容
 const contentCache = new Map<string, MarkdownContent>();
 
+function organizeFilesIntoGroups(files: FileItem[]): ChapterGroup[] {
+    const groups: { [key: string]: FileItem[] } = {};
+    
+    files.forEach(file => {
+        const name = file.name.replace('.md', '');
+        // 使用正则表达式匹配文件名中的分组信息
+        // 匹配模式：任意文字-任意文字 或 任意文字
+        const match = name.match(/^([^-]+)(?:-(.+))?$/);
+        let groupName = '其他';
+        
+        if (match) {
+            // 如果匹配到分组信息，使用第一部分作为分组名
+            groupName = match[1].trim();
+        }
+        
+        if (!groups[groupName]) {
+            groups[groupName] = [];
+        }
+        groups[groupName].push(file);
+    });
+    
+    // 将分组转换为数组并排序
+    return Object.entries(groups)
+        .map(([title, chapters]) => ({
+            title,
+            chapters: chapters.sort((a, b) => naturalSort(a.name, b.name)),
+            isExpanded: true
+        }))
+        .sort((a, b) => {
+            // 主线始终放在第一位
+            if (a.title === '主线') return -1;
+            if (b.title === '主线') return 1;
+            
+            // 其他分组按首字母排序
+            return a.title.localeCompare(b.title, 'zh-CN');
+        });
+}
+
 async function fetchFiles() {
     try {
         loading.value = true;
         const response = await axiosInstance.get(`/repos/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/contents/novels?ref=main`);
 
-        fileList.value = response.data
-            .filter((file: FileItem) => file.type === 'file' && file.name.endsWith('.md') && file.name !== 'README.md')
-            .sort((a: FileItem, b: FileItem) => naturalSort(a.name, b.name));
+        const files = response.data
+            .filter((file: FileItem) => file.type === 'file' && file.name.endsWith('.md') && file.name !== 'README.md');
+            
+        fileList.value = files;
+        chapterGroups.value = organizeFilesIntoGroups(files);
     } catch (err) {
         console.error(err);
     } finally {
@@ -154,8 +200,13 @@ export const handleFileClick = async (file: FileItem): Promise<void> => {
 };
 
 export const fileList = ref<FileItem[]>([]);
+export const chapterGroups = ref<ChapterGroup[]>([]);
 export const selectedFile = ref<MarkdownContent | null>(null);
 export const loading = ref(false);
+
+export const toggleGroup = (group: ChapterGroup) => {
+    group.isExpanded = !group.isExpanded;
+};
 
 export default defineComponent({
     name: "Novels",
@@ -165,9 +216,11 @@ export default defineComponent({
 
         return {
             fileList,
+            chapterGroups,
             selectedFile,
             loading,
             handleFileClick,
+            toggleGroup,
         };
     },
 });
