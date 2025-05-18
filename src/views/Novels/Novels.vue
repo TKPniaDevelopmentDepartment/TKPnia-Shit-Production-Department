@@ -36,18 +36,3 @@
 <script src="./Novels.ts"></script>
 
 <style src="./Novels.css"></style>
-
-<script lang="ts">
-import { defineComponent } from 'vue';
-
-export default defineComponent({
-    methods: {
-        formatFileName(fileName: string): string {
-            // 移除 .md 后缀
-            const nameWithoutExt = fileName.replace('.md', '');
-            // 移除前缀（如果有的话）
-            return nameWithoutExt.replace(/^[^-]+-/, '');
-        }
-    }
-});
-</script>

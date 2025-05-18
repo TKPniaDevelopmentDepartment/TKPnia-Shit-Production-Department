@@ -32,19 +32,19 @@ function naturalSort(a: string, b: string): number {
     // 检查是否包含"主线"和"番外篇"
     const aIsMain = a.includes('主线');
     const bIsMain = b.includes('主线');
-    
+
     // 如果一个是主线一个是番外篇，主线优先
     if (aIsMain && !bIsMain) return -1;
     if (!aIsMain && bIsMain) return 1;
-    
+
     // 如果都是主线或都是番外篇，则按数字排序
     const splitA = a.split(/(\d+)/);
     const splitB = b.split(/(\d+)/);
-    
+
     for (let i = 0; i < Math.min(splitA.length, splitB.length); i++) {
         const aPart = splitA[i];
         const bPart = splitB[i];
-        
+
         if (i % 2 === 0) {
             // 非数字部分比较
             const comparison = aPart.localeCompare(bPart, 'zh-CN');
@@ -56,7 +56,7 @@ function naturalSort(a: string, b: string): number {
             if (numA !== numB) return numA - numB;
         }
     }
-    
+
     return splitA.length - splitB.length;
 }
 
@@ -65,25 +65,25 @@ const contentCache = new Map<string, MarkdownContent>();
 
 function organizeFilesIntoGroups(files: FileItem[]): ChapterGroup[] {
     const groups: { [key: string]: FileItem[] } = {};
-    
+
     files.forEach(file => {
         const name = file.name.replace('.md', '');
         // 使用正则表达式匹配文件名中的分组信息
         // 匹配模式：任意文字-任意文字 或 任意文字
         const match = name.match(/^([^-]+)(?:-(.+))?$/);
         let groupName = '其他';
-        
+
         if (match) {
             // 如果匹配到分组信息，使用第一部分作为分组名
             groupName = match[1].trim();
         }
-        
+
         if (!groups[groupName]) {
             groups[groupName] = [];
         }
         groups[groupName].push(file);
     });
-    
+
     // 将分组转换为数组并排序
     return Object.entries(groups)
         .map(([title, chapters]) => ({
@@ -95,7 +95,7 @@ function organizeFilesIntoGroups(files: FileItem[]): ChapterGroup[] {
             // 主线始终放在第一位
             if (a.title === '主线') return -1;
             if (b.title === '主线') return 1;
-            
+
             // 其他分组按首字母排序
             return a.title.localeCompare(b.title, 'zh-CN');
         });
@@ -108,7 +108,7 @@ async function fetchFiles() {
 
         const files = response.data
             .filter((file: FileItem) => file.type === 'file' && file.name.endsWith('.md') && file.name !== 'README.md');
-            
+
         fileList.value = files;
         chapterGroups.value = organizeFilesIntoGroups(files);
     } catch (err) {
@@ -144,7 +144,7 @@ export const fetchFileContent = async (path: string): Promise<MarkdownContent | 
         const imgRegex = /<img\b[^>]*src="([^"]*)"[^>]*>/g;
         let match;
         const imgUrls = [];
-        
+
         while ((match = imgRegex.exec(html)) !== null) {
             imgUrls.push(match[1]);
         }
@@ -155,14 +155,14 @@ export const fetchFileContent = async (path: string): Promise<MarkdownContent | 
                 'https://github.com/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/blob/main/',
                 ''
             );
-            
+
             const imgResponse = await axiosInstance.get(
                 `/repos/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/contents/${repoPath}?ref=main`
             );
-            
+
             const imgBase64 = imgResponse.data.content;
             const imgType = repoPath.split('.').pop();
-            
+
             return {
                 originalUrl: imgUrl,
                 newUrl: `data:image/${imgType};base64,${imgBase64}`
@@ -170,7 +170,7 @@ export const fetchFileContent = async (path: string): Promise<MarkdownContent | 
         });
 
         const imgResults = await Promise.all(imgPromises);
-        
+
         // 替换所有图片URL
         for (const { originalUrl, newUrl } of imgResults) {
             html = html.replace(originalUrl, newUrl);
@@ -210,7 +210,7 @@ export const toggleGroup = (group: ChapterGroup) => {
 
 export default defineComponent({
     name: "Novels",
-    
+
     setup() {
         onMounted(fetchFiles);
 
@@ -223,4 +223,12 @@ export default defineComponent({
             toggleGroup,
         };
     },
+    methods: {
+        formatFileName(fileName: string): string {
+            // 移除 .md 后缀
+            const nameWithoutExt = fileName.replace('.md', '');
+            // 移除前缀（如果有的话）
+            return nameWithoutExt.replace(/^[^-]+-/, '');
+        }
+    }
 });
