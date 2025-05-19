@@ -89,7 +89,7 @@ function organizeFilesIntoGroups(files: FileItem[]): ChapterGroup[] {
         .map(([title, chapters]) => ({
             title,
             chapters: chapters.sort((a, b) => naturalSort(a.name, b.name)),
-            isExpanded: true
+            isExpanded: false
         }))
         .sort((a, b) => {
             // 主线始终放在第一位
