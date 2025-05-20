@@ -4,6 +4,7 @@
             <div class="nav-item" @click="navigateTo('Home')" :class="{ active: currentSection === 'Home' }">主页</div>
             <div class="nav-item" @click="navigateTo('Novels')" :class="{ active: currentSection === 'Novels' }">小说</div>
             <div class="nav-item" @click="navigateTo('Images')" :class="{ active: currentSection === 'Images' }">图片</div>
+            <div class="nav-item" @click="navigateTo('Musics')" :class="{ active: currentSection === 'Musics' }">音乐</div>
         </div>
         <div class="content">
             <router-view v-slot="{ Component }">
