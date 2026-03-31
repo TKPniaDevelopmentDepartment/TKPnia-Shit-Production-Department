@@ -7,11 +7,13 @@ interface FileItem {
     type: 'file' | 'dir';
     sha: string;
     download_url: string;
+    repo?: string;  // 添加仓库来源
 };
 
 interface MusicContent {
     url: string;
     title: string;
+    repo?: string;
 };
 
 const axiosInstance = axios.create({
@@ -23,6 +25,12 @@ const axiosInstance = axios.create({
 
 // 缓存已获取的音乐内容
 const contentCache = new Map<string, MusicContent>();
+
+// 配置多个音乐仓库
+const musicSources = [
+    { owner: 'K0meijiSatori', repo: 'my-music-page', path: 'media', branch: 'main' },
+    { owner: 'Plana-EpicTankCommander', repo: 'musicpage', path: '', branch: 'main' },
+];
 
 export const fileList = ref<FileItem[]>([]);
 export const selectedFile = ref<MusicContent | null>(null);
@@ -58,13 +66,36 @@ function naturalSort(a: string, b: string): number {
     return splitA.length - splitB.length;
 }
 
+// 从多个仓库获取音乐文件
 const fetchFiles = async () => {
     try {
         loading.value = true;
-        const response = await axiosInstance.get(`/repos/K0meijiSatori/my-music-page/contents/media?ref=main`);
-        fileList.value = response.data
-            .filter((file: FileItem) => file.type === 'file' && file.name.endsWith('.mp3'))
-            .sort((a: FileItem, b: FileItem) => naturalSort(a.name, b.name));
+        const allFiles: FileItem[] = [];
+        
+        // 遍历所有仓库
+        for (const source of musicSources) {
+            try {
+                const response = await axiosInstance.get(
+                    `/repos/${source.owner}/${source.repo}/contents/${source.path}?ref=${source.branch}`
+                );
+                
+                // 检查返回的是文件还是目录
+                const data = Array.isArray(response.data) ? response.data : [response.data];
+                
+                const files = data
+                    .filter((file: FileItem) => file.type === 'file' && file.name.endsWith('.mp3'))
+                    .map((file: FileItem) => ({
+                        ...file,
+                        repo: source.repo  // 标记来源仓库
+                    }));
+                allFiles.push(...files);
+            } catch (err) {
+                console.error(`获取仓库 ${source.repo} 失败:`, err);
+            }
+        }
+        
+        // 按名称排序
+        fileList.value = allFiles.sort((a: FileItem, b: FileItem) => naturalSort(a.name, b.name));
     } catch (err) {
         console.error(err);
     } finally {
@@ -73,20 +104,24 @@ const fetchFiles = async () => {
 };
 
 const fetchFileContent = async (file: FileItem): Promise<MusicContent | null> => {
+    // 使用 repo + sha 作为缓存键，以便区分不同仓库的同名文件
+    const cacheKey = `${file.repo || 'default'}_${file.sha}`;
+    
     // 检查缓存
-    if (contentCache.has(file.sha)) {
-        return contentCache.get(file.sha)!;
+    if (contentCache.has(cacheKey)) {
+        return contentCache.get(cacheKey)!;
     }
 
     try {
         loading.value = true;
         const result = {
             url: file.download_url,
-            title: file.name.replace('.mp3', '')
+            title: file.name.replace('.mp3', ''),
+            repo: file.repo
         };
 
         // 存入缓存
-        contentCache.set(file.sha, result);
+        contentCache.set(cacheKey, result);
         return result;
     } catch (err) {
         console.error('获取音乐内容失败:', err);
@@ -219,4 +254,4 @@ export default defineComponent({
             setVolume
         };
     },
-}); 
+});
