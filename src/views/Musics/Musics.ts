@@ -7,7 +7,7 @@ interface FileItem {
     type: 'file' | 'dir';
     sha: string;
     download_url: string;
-    repo?: string;  // 添加仓库来源标记
+    repo?: string;
 };
 
 interface MusicContent {
@@ -29,7 +29,6 @@ const axiosInstance = axios.create({
     },
 });
 
-// 缓存已获取的音乐内容
 const contentCache = new Map<string, MusicContent>();
 
 export const fileList = ref<FileItem[]>([]);
@@ -42,7 +41,6 @@ export const audio = new Audio();
 export const currentTime = ref(0);
 export const duration = ref(0);
 
-// 智能排序函数
 function naturalSort(a: string, b: string): number {
     const splitA = a.split(/(\d+)/);
     const splitB = b.split(/(\d+)/);
@@ -64,7 +62,6 @@ function naturalSort(a: string, b: string): number {
     return splitA.length - splitB.length;
 }
 
-// 从所有仓库获取音乐文件
 const fetchFiles = async () => {
     try {
         loading.value = true;
@@ -80,7 +77,7 @@ const fetchFiles = async () => {
                     .filter((file: FileItem) => file.type === 'file' && file.name.endsWith('.mp3'))
                     .map((file: FileItem) => ({
                         ...file,
-                        repo: `${source.owner}/${source.repo}`  // 标记来源仓库
+                        repo: `${source.owner}/${source.repo}`
                     }));
                 
                 allFiles.push(...files);
@@ -89,7 +86,6 @@ const fetchFiles = async () => {
             }
         }
 
-        // 按名称排序
         fileList.value = allFiles.sort((a, b) => naturalSort(a.name, b.name));
     } catch (err) {
         console.error(err);
