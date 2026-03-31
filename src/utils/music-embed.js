@@ -1,10 +1,10 @@
 /**
  * 嵌入式音乐播放器
- * 用法：在 Markdown 中写 :::music{url=音乐链接}[标题]:::
+ * 用法：在 Markdown 中写 ![音乐播放器]music{url=音乐链接}[标题]
  */
 
 export function initMusicEmbed() {
-  // 查找包含 :::music 的文本节点
+  // 查找包含 music{url= 的文本节点
   const walker = document.createTreeWalker(
     document.body,
     NodeFilter.SHOW_TEXT,
@@ -15,7 +15,7 @@ export function initMusicEmbed() {
   const nodesToProcess = []
   let node
   while ((node = walker.nextNode())) {
-    if (node.textContent.includes(':::music')) {
+    if (node.textContent.includes('music{url=')) {
       nodesToProcess.push(node)
     }
   }
@@ -26,8 +26,9 @@ export function initMusicEmbed() {
     if (!parent) return
 
     const html = parent.innerHTML
+    // 匹配 ![音乐播放器]music{url=xxx}[标题]
     const replaced = html.replace(
-      /:::music\{url=([^}]+)\}\[([^\]]+)\]:::/g,
+      /!\[音乐播放器\]music\{url=([^}]+)\}\[([^\]]+)\]/g,
       (match, url, title) => {
         return createMusicPlayerHTML(url, title)
       }
