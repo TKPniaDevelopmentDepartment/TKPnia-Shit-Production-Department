@@ -105,7 +105,7 @@ function organizeFilesIntoGroups(files: FileItem[]): ChapterGroup[] {
 async function fetchFiles() {
     try {
         loading.value = true;
-        const response = await axiosInstance.get(`/repos/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/contents/novels?ref=main`);
+        const response = await axiosInstance.get(`/repos/Plana-EpicTankCommander/TKPnia-Shit-Production-Department/contents/novels?ref=main`);
 
         const files = response.data
             .filter((file: FileItem) => file.type === 'file' && file.name.endsWith('.md') && file.name !== 'README.md');
@@ -128,7 +128,7 @@ export const fetchFileContent = async (path: string): Promise<MarkdownContent | 
     try {
         loading.value = true;
         const response = await axiosInstance.get(
-            `/repos/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/contents/${path}?ref=main`
+            `/repos/Plana-EpicTankCommander/TKPnia-Shit-Production-Department/contents/${path}?ref=main`
         );
 
         const base64Content = response.data.content;
@@ -153,12 +153,12 @@ export const fetchFileContent = async (path: string): Promise<MarkdownContent | 
         // 批量获取图片内容
         const imgPromises = imgUrls.map(async (imgUrl) => {
             const repoPath = imgUrl.replace(
-                'https://github.com/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/blob/main/',
+                'https://github.com/Plana-EpicTankCommander/TKPnia-Shit-Production-Department/blob/main/',
                 ''
             );
 
             const imgResponse = await axiosInstance.get(
-                `/repos/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/contents/${repoPath}?ref=main`
+                `/repos/Plana-EpicTankCommander/TKPnia-Shit-Production-Department/contents/${repoPath}?ref=main`
             );
 
             const imgBase64 = imgResponse.data.content;
