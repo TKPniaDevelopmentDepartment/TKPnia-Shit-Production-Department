@@ -54,7 +54,7 @@ function naturalSort(a: string, b: string): number {
 const fetchFiles = async () => {
     try {
         loading.value = true;
-        const response = await axiosInstance.get(`/repos/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/contents/images?ref=main`);
+        const response = await axiosInstance.get(`/repos/Plana-EpicTankCommander/TKPnia-Shit-Production-Department/contents/images?ref=main`);
         fileList.value = response.data
             .filter((file: FileItem) => file.type === 'file' && file.name.endsWith('.png'))
             .sort((a: FileItem, b: FileItem) => naturalSort(a.name, b.name));
@@ -73,7 +73,7 @@ const fetchFileContent = async (path: string): Promise<ImageContent | null> => {
 
     try {
         loading.value = true;
-        const response = await axiosInstance.get(`/repos/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/contents/${path}?ref=main`);
+        const response = await axiosInstance.get(`/repos/Plana-EpicTankCommander/TKPnia-Shit-Production-Department/contents/${path}?ref=main`);
         const content = response.data.content;
         const title = response.data.name.replace('.png', '');
         
