@@ -7,20 +7,12 @@ interface FileItem {
     type: 'file' | 'dir';
     sha: string;
     download_url: string;
-    repo?: string;
 };
 
 interface MusicContent {
     url: string;
     title: string;
-    repo?: string;
 };
-
-// 音乐源配置（可添加多个仓库）
-const musicSources = [
-    { owner: 'K0meijiSatori', repo: 'my-music-page', branch: 'main', path: 'media' },
-    { owner: 'Plana-EpicTankCommander', repo: 'musicpage', branch: 'main', path: '' },
-];
 
 const axiosInstance = axios.create({
     baseURL: 'https://api.github.com',
@@ -50,9 +42,11 @@ function naturalSort(a: string, b: string): number {
         const bPart = splitB[i];
         
         if (i % 2 === 0) {
+            // 非数字部分比较
             const comparison = aPart.localeCompare(bPart, 'zh-CN');
             if (comparison !== 0) return comparison;
         } else {
+            // 数字部分比较
             const numA = parseInt(aPart);
             const numB = parseInt(bPart);
             if (numA !== numB) return numA - numB;
@@ -65,28 +59,10 @@ function naturalSort(a: string, b: string): number {
 const fetchFiles = async () => {
     try {
         loading.value = true;
-        const allFiles: FileItem[] = [];
-
-        for (const source of musicSources) {
-            try {
-                const response = await axiosInstance.get(
-                    `/repos/${source.owner}/${source.repo}/contents/${source.path}?ref=${source.branch}`
-                );
-                
-                const files = response.data
-                    .filter((file: FileItem) => file.type === 'file' && file.name.endsWith('.mp3'))
-                    .map((file: FileItem) => ({
-                        ...file,
-                        repo: `${source.owner}/${source.repo}`
-                    }));
-                
-                allFiles.push(...files);
-            } catch (err) {
-                console.error(`获取仓库 ${source.owner}/${source.repo} 失败:`, err);
-            }
-        }
-
-        fileList.value = allFiles.sort((a, b) => naturalSort(a.name, b.name));
+        const response = await axiosInstance.get(`/repos/K0meijiSatori/my-music-page/contents/media?ref=main`);
+        fileList.value = response.data
+            .filter((file: FileItem) => file.type === 'file' && file.name.endsWith('.mp3'))
+            .sort((a: FileItem, b: FileItem) => naturalSort(a.name, b.name));
     } catch (err) {
         console.error(err);
     } finally {
@@ -95,21 +71,20 @@ const fetchFiles = async () => {
 };
 
 const fetchFileContent = async (file: FileItem): Promise<MusicContent | null> => {
-    const cacheKey = `${file.repo}-${file.sha}`;
-    
-    if (contentCache.has(cacheKey)) {
-        return contentCache.get(cacheKey)!;
+    // 检查缓存
+    if (contentCache.has(file.sha)) {
+        return contentCache.get(file.sha)!;
     }
 
     try {
         loading.value = true;
         const result = {
             url: file.download_url,
-            title: file.name.replace('.mp3', ''),
-            repo: file.repo
+            title: file.name.replace('.mp3', '')
         };
 
-        contentCache.set(cacheKey, result);
+        // 存入缓存
+        contentCache.set(file.sha, result);
         return result;
     } catch (err) {
         console.error('获取音乐内容失败:', err);
@@ -119,6 +94,7 @@ const fetchFileContent = async (file: FileItem): Promise<MusicContent | null> =>
     }
 };
 
+// 格式化时间
 const formatTime = (seconds: number): string => {
     if (isNaN(seconds)) return '00:00';
     const minutes = Math.floor(seconds / 60);
@@ -126,6 +102,7 @@ const formatTime = (seconds: number): string => {
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
 };
 
+// 音频事件监听器
 const setupAudioListeners = () => {
     audio.addEventListener('timeupdate', () => {
         if (!isNaN(audio.duration)) {
@@ -169,6 +146,7 @@ const handleFileClick = async (file: FileItem) => {
         const content = await fetchFileContent(file);
         if (content && content.url) {
             selectedFile.value = content;
+            // 设置新的音频源
             audio.src = content.url;
             audio.load();
             isPlaying.value = false;
@@ -218,6 +196,8 @@ export default defineComponent({
         onMounted(() => {
             fetchFiles();
             setupAudioListeners();
+            
+            // 初始化音量
             audio.volume = volume.value / 100;
         });
 
@@ -237,4 +217,4 @@ export default defineComponent({
             setVolume
         };
     },
-});
+}); 
