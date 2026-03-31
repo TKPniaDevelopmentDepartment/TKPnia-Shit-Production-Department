@@ -1,4 +1,5 @@
-import { defineComponent, ref, onMounted } from "vue";
+import { defineComponent, ref, onMounted, nextTick } from "vue";
+import { initMusicEmbed } from "../utils/music-embed";
 import axios from 'axios';
 import { marked } from "marked";
 
@@ -196,6 +197,9 @@ export const handleFileClick = async (file: FileItem): Promise<void> => {
     const content = await fetchFileContent(file.path);
     if (content) {
         selectedFile.value = content;
+        nextTick(() => {
+          initMusicEmbed();
+        });
     }
 };
 
