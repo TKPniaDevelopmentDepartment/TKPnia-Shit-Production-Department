@@ -1,6 +1,2 @@
-&emsp;&emsp;11111
-&emsp;&emsp;22222
-![音乐播放器]music{url=https://raw.githubusercontent.com/Plana-EpicTankCommander/musicpage/main/[TFR]瞄准强敌打！瞄准强敌练！.mp3}[瞄准强敌打]
-&emsp;&emsp;这一页用来测试插入音乐播放器
-:::music{url=https://raw.githubusercontent.com/Plana-EpicTankCommander/musicpage/main/[TFR]瞄准强敌打！瞄准强敌练！.mp3}[背景音乐]
-&emsp;&emsp;33333
+## 12345
+&emsp;&emsp;标题五个字
