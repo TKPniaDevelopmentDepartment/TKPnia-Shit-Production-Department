@@ -1,1 +1,1 @@
-![音乐播放器]music{url=https://raw.githubusercontent.com/Plana-EpicTankCommander/musicpage/main/[TFR]瞄准强敌打！瞄准强敌练！.mp3}[瞄准强敌打]
+:::music{url=https://raw.githubusercontent.com/Plana-EpicTankCommander/musicpage/main/[TFR]瞄准强敌打！瞄准强敌练！.mp3}[瞄准强敌打]
