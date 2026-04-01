@@ -1,43 +1,39 @@
-import { defineComponent, ref, onMounted } from "vue";
-import axios from 'axios';
+import { defineComponent, onMounted, ref } from "vue";
 import { marked } from "marked";
-
-interface FileItem {
-    name: string;
-    path: string;
-    type: 'file' | 'dir';
-    sha: string;
-};
+import type { ContentFileItem } from "../../services/contentSource";
+import {
+    getBinaryFileUrl,
+    readTextContent,
+    listContentFiles,
+    resolveMarkdownAssetRepoPath,
+    resolveSectionFromRepoPath,
+    stripBaseDir,
+} from "../../services/contentSource";
 
 interface MarkdownContent {
     content: string;
     title: string;
-};
+}
 
 interface ChapterGroup {
     title: string;
-    chapters: FileItem[];
+    chapters: ContentFileItem[];
     isExpanded: boolean;
 }
 
-const axiosInstance = axios.create({
-    baseURL: 'https://api.github.com',
-    headers: {
-        Accept: 'application/vnd.github.v3+json',
-    },
-});
-
 // 智能排序函数
 function naturalSort(a: string, b: string): number {
-    // 检查是否包含"主线"和"番外篇"
     const aIsMain = a.includes('主线');
     const bIsMain = b.includes('主线');
 
-    // 如果一个是主线一个是番外篇，主线优先
-    if (aIsMain && !bIsMain) return -1;
-    if (!aIsMain && bIsMain) return 1;
+    if (aIsMain && !bIsMain) {
+        return -1;
+    }
 
-    // 如果都是主线或都是番外篇，则按数字排序
+    if (!aIsMain && bIsMain) {
+        return 1;
+    }
+
     const splitA = a.split(/(\d+)/);
     const splitB = b.split(/(\d+)/);
 
@@ -46,68 +42,116 @@ function naturalSort(a: string, b: string): number {
         const bPart = splitB[i];
 
         if (i % 2 === 0) {
-            // 非数字部分比较
             const comparison = aPart.localeCompare(bPart, 'zh-CN');
-            if (comparison !== 0) return comparison;
+            if (comparison !== 0) {
+                return comparison;
+            }
         } else {
-            // 数字部分比较
             const numA = parseInt(aPart);
             const numB = parseInt(bPart);
-            if (numA !== numB) return numA - numB;
+            if (numA !== numB) {
+                return numA - numB;
+            }
         }
     }
 
     return splitA.length - splitB.length;
 }
 
-// 缓存已获取的文件内容
 const contentCache = new Map<string, MarkdownContent>();
 
-function organizeFilesIntoGroups(files: FileItem[]): ChapterGroup[] {
-    const groups: { [key: string]: FileItem[] } = {};
+function organizeFilesIntoGroups(files: ContentFileItem[]): ChapterGroup[] {
+    const groups: Record<string, ContentFileItem[]> = {};
 
-    files.forEach(file => {
+    files.forEach((file) => {
         const name = file.name.replace('.md', '');
-        // 使用正则表达式匹配文件名中的分组信息
-        // 匹配模式：任意文字-任意文字 或 任意文字
         const match = name.match(/^([^-]+)(?:-(.+))?$/);
-        let groupName = '其他';
-
-        if (match) {
-            // 如果匹配到分组信息，使用第一部分作为分组名
-            groupName = match[1].trim();
-        }
+        const groupName = match ? match[1].trim() : '其他';
 
         if (!groups[groupName]) {
             groups[groupName] = [];
         }
+
         groups[groupName].push(file);
     });
 
-    // 将分组转换为数组并排序
     return Object.entries(groups)
         .map(([title, chapters]) => ({
-            title,
             chapters: chapters.sort((a, b) => naturalSort(a.name, b.name)),
-            isExpanded: false
+            isExpanded: false,
+            title,
         }))
         .sort((a, b) => {
-            // 主线始终放在第一位
-            if (a.title === '主线') return -1;
-            if (b.title === '主线') return 1;
+            if (a.title === '主线') {
+                return -1;
+            }
 
-            // 其他分组按首字母排序
+            if (b.title === '主线') {
+                return 1;
+            }
+
             return a.title.localeCompare(b.title, 'zh-CN');
         });
+}
+
+async function replaceMarkdownImageUrls(html: string, markdownPath: string): Promise<string> {
+    const imgRegex = /<img\b[^>]*src="([^"]*)"[^>]*>/g;
+    const imgUrls = Array.from(html.matchAll(imgRegex), (match) => match[1]);
+
+    if (imgUrls.length === 0) {
+        return html;
+    }
+
+    const replacements = await Promise.all(
+        imgUrls.map(async (imgUrl) => {
+            const repoPath = resolveMarkdownAssetRepoPath(markdownPath, imgUrl);
+
+            if (!repoPath) {
+                return null;
+            }
+
+            const section = resolveSectionFromRepoPath(repoPath);
+
+            if (!section) {
+                return null;
+            }
+
+            const filePath = stripBaseDir(section, repoPath);
+
+            if (!filePath) {
+                return null;
+            }
+
+            const newUrl = await getBinaryFileUrl(section, filePath);
+
+            return {
+                newUrl,
+                originalUrl: imgUrl,
+            };
+        })
+    );
+
+    let replacedHtml = html;
+
+    for (const replacement of replacements) {
+        if (!replacement) {
+            continue;
+        }
+
+        replacedHtml = replacedHtml.replace(replacement.originalUrl, replacement.newUrl);
+    }
+
+    return replacedHtml;
 }
 
 async function fetchFiles() {
     try {
         loading.value = true;
-        const response = await axiosInstance.get(`/repos/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/contents/novels?ref=main`);
 
-        const files = response.data
-            .filter((file: FileItem) => file.type === 'file' && file.name.endsWith('.md') && file.name !== 'README.md');
+        const files = (await listContentFiles('novels'))
+            .filter(
+                (file) => file.type === 'file' && file.name.endsWith('.md') && file.name !== 'README.md'
+            );
 
         fileList.value = files;
         chapterGroups.value = organizeFilesIntoGroups(files);
@@ -119,69 +163,24 @@ async function fetchFiles() {
 }
 
 export const fetchFileContent = async (path: string): Promise<MarkdownContent | null> => {
-    // 检查缓存
     if (contentCache.has(path)) {
         return contentCache.get(path)!;
     }
 
     try {
         loading.value = true;
-        const response = await axiosInstance.get(
-            `/repos/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/contents/${path}?ref=main`
-        );
-
-        const base64Content = response.data.content;
-        const uint8Array = new Uint8Array(atob(base64Content).split('').map(c => c.charCodeAt(0)));
-        const decoder = new TextDecoder('utf-8');
-        const content = decoder.decode(uint8Array);
+        const content = await readTextContent('novels', path);
 
         let html = await marked.parse(content, {
-            gfm: true,
             breaks: true,
+            gfm: true,
         });
 
-        // 图片处理
-        const imgRegex = /<img\b[^>]*src="([^"]*)"[^>]*>/g;
-        let match;
-        const imgUrls = [];
+        html = await replaceMarkdownImageUrls(html, path);
 
-        while ((match = imgRegex.exec(html)) !== null) {
-            imgUrls.push(match[1]);
-        }
+        const title = path.split('/').pop()?.replace('.md', '') ?? path;
+        const result = { content: html, title };
 
-        // 批量获取图片内容
-        const imgPromises = imgUrls.map(async (imgUrl) => {
-            const repoPath = imgUrl.replace(
-                'https://github.com/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/blob/main/',
-                ''
-            );
-
-            const imgResponse = await axiosInstance.get(
-                `/repos/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/contents/${repoPath}?ref=main`
-            );
-
-            const imgBase64 = imgResponse.data.content;
-            const imgType = repoPath.split('.').pop();
-
-            return {
-                originalUrl: imgUrl,
-                newUrl: `data:image/${imgType};base64,${imgBase64}`
-            };
-        });
-
-        const imgResults = await Promise.all(imgPromises);
-
-        // 替换所有图片URL
-        for (const { originalUrl, newUrl } of imgResults) {
-            html = html.replace(originalUrl, newUrl);
-        }
-
-        const result = {
-            content: html,
-            title: response.data.name.replace('.md', '')
-        };
-
-        // 存入缓存
         contentCache.set(path, result);
         return result;
     } catch (err) {
@@ -192,14 +191,14 @@ export const fetchFileContent = async (path: string): Promise<MarkdownContent | 
     }
 };
 
-export const handleFileClick = async (file: FileItem): Promise<void> => {
+export const handleFileClick = async (file: ContentFileItem): Promise<void> => {
     const content = await fetchFileContent(file.path);
     if (content) {
         selectedFile.value = content;
     }
 };
 
-export const fileList = ref<FileItem[]>([]);
+export const fileList = ref<ContentFileItem[]>([]);
 export const chapterGroups = ref<ChapterGroup[]>([]);
 export const selectedFile = ref<MarkdownContent | null>(null);
 export const loading = ref(false);
@@ -215,19 +214,17 @@ export default defineComponent({
         onMounted(fetchFiles);
 
         return {
-            fileList,
             chapterGroups,
-            selectedFile,
-            loading,
+            fileList,
             handleFileClick,
+            loading,
+            selectedFile,
             toggleGroup,
         };
     },
     methods: {
         formatFileName(fileName: string): string {
-            // 移除 .md 后缀
             const nameWithoutExt = fileName.replace('.md', '');
-            // 移除前缀（如果有的话）
             return nameWithoutExt.replace(/^[^-]+-/, '');
         }
     }

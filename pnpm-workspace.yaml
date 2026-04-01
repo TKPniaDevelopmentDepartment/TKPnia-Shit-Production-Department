@@ -1,0 +1,3 @@
+onlyBuiltDependencies:
+  - classic-level
+  - esbuild
