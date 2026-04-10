@@ -1,0 +1,261 @@
+.m-container {
+    display: flex;
+    height: 100%;
+    background: #f5f5f5;
+    color: #333;
+}
+
+.m-sidebar {
+    width: 300px;
+    background: #fff;
+    border-right: 1px solid #e0e0e0;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.m-sidebar h2 {
+    margin: 0 0 20px 0;
+    color: #2c3e50;
+    font-size: 1.5em;
+}
+
+.m-file-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.m-file-item {
+    padding: 12px 15px;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    margin-bottom: 5px;
+}
+
+.m-file-item:hover {
+    background: #f0f7ff;
+    color: #1a73e8;
+}
+
+.m-file-item.active {
+    background: #e8f0fe;
+    color: #1a73e8;
+}
+
+.m-main {
+    flex: 1;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.m-player-content {
+    width: 100%;
+    max-width: 600px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 25px;
+}
+
+.m-player-info {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.m-player-info h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.4em;
+}
+
+.m-player-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.m-control-btn {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: none;
+    background: #4CAF50;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.m-control-btn:hover {
+    transform: scale(1.1);
+}
+
+.m-control-btn i {
+    font-size: 0.9em;
+}
+
+/* 暂停状态样式 */
+.m-control-btn.paused {
+    background: #f44336;
+}
+
+/* 播放状态样式 */
+.m-control-btn.playing {
+    background: #4CAF50;
+}
+
+.m-control-text {
+    font-size: 2em;
+    font-weight: 500;
+    letter-spacing: 1px;
+    line-height: 1;
+    text-align: center;
+}
+
+.m-progress-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.m-time {
+    font-size: 0.9em;
+    color: #666;
+    min-width: 45px;
+    text-align: center;
+}
+
+.m-progress-bar {
+    flex: 1;
+    position: relative;
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.m-progress {
+    position: absolute;
+    height: 100%;
+    background: #1a73e8;
+    border-radius: 3px;
+    transition: width 0.1s linear;
+}
+
+.m-progress-slider {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.m-volume-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 10px;
+}
+
+.m-volume-label {
+    color: #666;
+    font-size: 0.9em;
+    min-width: 40px;
+}
+
+.m-volume-control i {
+    color: #666;
+    width: 20px;
+}
+
+.m-volume-value {
+    color: #666;
+    font-size: 0.9em;
+    min-width: 45px;
+    text-align: right;
+}
+
+.m-volume-slider {
+    flex: 1;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #e0e0e0;
+    border-radius: 2px;
+    outline: none;
+}
+
+.m-volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #1a73e8;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.m-volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+.m-placeholder {
+    text-align: center;
+    color: #666;
+    font-size: 1.1em;
+}
+
+.m-loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 1.1em;
+    z-index: 1000;
+}
+
+/* 自定义进度条样式 */
+.m-progress-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #1a73e8;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.m-progress-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .m-container {
+        flex-direction: column;
+    }
+
+    .m-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .m-player-content {
+        padding: 15px;
+    }
+} 

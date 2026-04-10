@@ -1,0 +1,138 @@
+.n-container {
+    display: flex;
+    height: 100%;
+    position: relative;
+}
+
+.n-sidebar {
+    width: 400px;
+    border-right: 1px solid #e0e0e0;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.n-main {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.n-file-list {
+    margin-top: 20px;
+}
+
+.n-chapter-group {
+    margin-bottom: 10px;
+}
+
+.n-group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s;
+}
+
+.n-group-header:hover {
+    background-color: #e8e8e8;
+}
+
+.n-group-title {
+    font-weight: 500;
+    color: #333;
+}
+
+.n-group-toggle {
+    color: #666;
+    font-size: 12px;
+}
+
+.n-chapter-list {
+    list-style: none;
+    padding: 0;
+    margin: 5px 0 0 0;
+}
+
+.n-file-item {
+    padding: 8px 12px 8px 24px;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.2s;
+    border-radius: 4px;
+}
+
+.n-file-item:hover {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.n-markdown-content {
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.n-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #999;
+    font-size: 16px;
+}
+
+.n-loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* 响应式设计 */
+@media (min-width: 1024px) {
+    .n-container {
+        padding: 1.5rem;
+        gap: 2rem;
+    }
+
+    .n-sidebar {
+        width: 400px;
+    }
+
+    .n-file-list {
+        max-height: calc(100vh - 150px);
+    }
+
+    .n-markdown-content {
+        padding: 2.5rem;
+    }
+}
+
+@media (max-width: 1023px) {
+    .n-container {
+        padding: 1.25rem;
+        gap: 1.5rem;
+    }
+
+    .n-sidebar {
+        width: 400px;
+    }
+
+    .n-file-list {
+        max-height: calc(100vh - 130px);
+    }
+
+    .n-markdown-content {
+        padding: 2rem;
+    }
+}
