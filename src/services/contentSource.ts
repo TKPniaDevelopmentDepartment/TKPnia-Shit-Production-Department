@@ -20,9 +20,15 @@ interface ContentFileResponse {
 
 interface GitHubSectionConfig {
     baseDir: string;
-    owner: string;
-    ref: string;
-    repo: string;
+    repos?: Array<{
+        owner: string;
+        ref: string;
+        repo: string;
+        baseDir?: string; // 每个仓库可以有不同的目录
+    }>;
+    owner?: string;
+    ref?: string;
+    repo?: string;
 }
 
 interface LocalContentConfig {
@@ -50,9 +56,20 @@ const GITHUB_SECTION_CONFIG: Record<ContentSection, GitHubSectionConfig> = {
     },
     musics: {
         baseDir: 'media',
-        owner: 'K0meijiSatori',
-        ref: 'main',
-        repo: 'my-music-page',
+        repos: [
+            {
+                owner: 'K0meijiSatori',
+                ref: 'main',
+                repo: 'my-music-page',
+                baseDir: 'media',
+            },
+            {
+                owner: 'Plana-EpicTankCommander',
+                ref: 'main',
+                repo: 'musicpage',
+                baseDir: '',  // 根目录
+            },
+        ],
     },
     novels: {
         baseDir: 'novels',
@@ -278,12 +295,56 @@ export async function listContentFiles(section: ContentSection): Promise<Content
         return data;
     }
 
-    const { baseDir, owner, ref, repo } = GITHUB_SECTION_CONFIG[section];
-    const { data } = await githubApi.get<ContentFileItem[]>(
-        `/repos/${owner}/${repo}/contents/${encodeRepoPath(baseDir)}?ref=${encodeURIComponent(ref)}`
-    );
+    const config = GITHUB_SECTION_CONFIG[section];
+    
+    // 支持多仓库
+    if (config.repos && config.repos.length > 0) {
+        const allFiles: ContentFileItem[] = [];
+        for (const repoConfig of config.repos) {
+            try {
+                // 每个仓库可以使用不同的目录，默认使用全局 baseDir
+                const repoBaseDir = repoConfig.baseDir ?? config.baseDir;
+                const { data } = await githubApi.get<ContentFileItem[]>(
+                    `/repos/${repoConfig.owner}/${repoConfig.repo}/contents/${encodeRepoPath(repoBaseDir)}?ref=${encodeURIComponent(repoConfig.ref)}`
+                );
+                // 标记来源仓库，避免文件冲突
+                const repoPrefix = `${repoConfig.owner}/${repoConfig.repo}/`;
+                const prefixedData = data.map(item => ({
+                    ...item,
+                    path: repoPrefix + item.path,
+                    name: item.name,
+                }));
+                allFiles.push(...prefixedData);
+            } catch (e) {
+                console.warn(`Failed to fetch from ${repoConfig.owner}/${repoConfig.repo}:`, e);
+            }
+        }
+        return allFiles;
+    }
 
-    return data;
+    // 单仓库兼容
+    if (config.owner && config.repo) {
+        const { data } = await githubApi.get<ContentFileItem[]>(
+            `/repos/${config.owner}/${config.repo}/contents/${encodeRepoPath(config.baseDir)}?ref=${encodeURIComponent(config.ref || 'main')}`
+        );
+        return data;
+    }
+
+    return [];
+}
+
+// 从文件路径中提取仓库信息
+function extractRepoFromPath(filePath: string): { owner: string; repo: string; path: string } | null {
+    const parts = filePath.split('/');
+    if (parts.length >= 3 && parts[0] && parts[1] && parts[2]) {
+        // 格式: owner/repo/rest/of/path
+        return {
+            owner: parts[0],
+            repo: parts[1],
+            path: parts.slice(2).join('/'),
+        };
+    }
+    return null;
 }
 
 export async function readContentFile(
@@ -300,12 +361,35 @@ export async function readContentFile(
         return data;
     }
 
-    const { owner, ref, repo } = GITHUB_SECTION_CONFIG[section];
-    const { data } = await githubApi.get<ContentFileResponse>(
-        `/repos/${owner}/${repo}/contents/${encodeRepoPath(filePath)}?ref=${encodeURIComponent(ref)}`
-    );
+    const config = GITHUB_SECTION_CONFIG[section];
 
-    return data;
+    // 支持多仓库 - 检查路径是否带有仓库前缀
+    if (config.repos && config.repos.length > 0) {
+        const repoInfo = extractRepoFromPath(filePath);
+        if (repoInfo) {
+            // 使用路径中的仓库信息
+            const { data } = await githubApi.get<ContentFileResponse>(
+                `/repos/${repoInfo.owner}/${repoInfo.repo}/contents/${encodeRepoPath(repoInfo.path)}`
+            );
+            return data;
+        }
+        // 如果没有前缀，尝试从第一个仓库读取
+        const firstRepo = config.repos[0];
+        const { data } = await githubApi.get<ContentFileResponse>(
+            `/repos/${firstRepo.owner}/${firstRepo.repo}/contents/${encodeRepoPath(filePath)}`
+        );
+        return data;
+    }
+
+    // 单仓库兼容
+    if (config.owner && config.repo) {
+        const { data } = await githubApi.get<ContentFileResponse>(
+            `/repos/${config.owner}/${config.repo}/contents/${encodeRepoPath(filePath)}?ref=${encodeURIComponent(config.ref || 'main')}`
+        );
+        return data;
+    }
+
+    throw new Error('No repository configuration found');
 }
 
 export async function readTextContent(section: ContentSection, filePath: string): Promise<string> {
@@ -341,6 +425,23 @@ export async function getDownloadUrl(
 
     if (file.download_url) {
         return file.download_url;
+    }
+
+    const config = GITHUB_SECTION_CONFIG[section];
+
+    // 支持多仓库
+    if (config.repos && config.repos.length > 0) {
+        const repoInfo = extractRepoFromPath(file.path);
+        if (repoInfo) {
+            try {
+                const response = await githubApi.get<ContentFileResponse>(
+                    `/repos/${repoInfo.owner}/${repoInfo.repo}/contents/${encodeRepoPath(repoInfo.path)}`
+                );
+                return response.data.download_url ?? `data:${guessMimeType(file.path)};base64,${response.data.content}`;
+            } catch (e) {
+                console.warn(`Failed to get download URL from ${repoInfo.owner}/${repoInfo.repo}:`, e);
+            }
+        }
     }
 
     const response = await readContentFile(section, file.path);

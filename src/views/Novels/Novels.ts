@@ -1,8 +1,10 @@
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, shallowRef } from "vue";
 import { marked } from "marked";
+import InlineMusicPlayer from "../../components/InlinePlayer/InlinePlayer.vue";
 import type { ContentFileItem } from "../../services/contentSource";
 import {
     getBinaryFileUrl,
+    getDownloadUrl,
     readTextContent,
     listContentFiles,
     resolveMarkdownAssetRepoPath,
@@ -10,9 +12,16 @@ import {
     stripBaseDir,
 } from "../../services/contentSource";
 
+interface MusicMarker {
+    filename: string;
+    placeholder: string;
+    url: string;
+}
+
 interface MarkdownContent {
     content: string;
     title: string;
+    musicMarkers: MusicMarker[];
 }
 
 interface ChapterGroup {
@@ -162,6 +171,55 @@ async function fetchFiles() {
     }
 }
 
+// 解析音乐标记 - 语法: [music:歌曲名.mp3]
+async function resolveMusicFileUrl(filename: string): Promise<string | null> {
+    try {
+        const files = await listContentFiles('musics');
+        const matchedFile = files.find(f => f.name === filename || f.name === filename.replace('.mp3', '') + '.mp3');
+        if (matchedFile) {
+            return await getDownloadUrl('musics', matchedFile);
+        }
+    } catch (e) {
+        console.warn('无法获取音乐文件:', e);
+    }
+    return null;
+}
+
+async function parseMusicMarkers(text: string): Promise<{ content: string; musicMarkers: MusicMarker[] }> {
+    // 匹配 [music:文件名.mp3] 或 [music:文件名.mp3;title:标题]
+    // 新语法支持 title 自定义：[music:文件名.mp3;title:自定义标题]
+    const musicRegex = /\[music:(.+?\.mp3)(?:;title:([^^\]]+))?\]/g;
+    const musicMarkers: MusicMarker[] = [];
+    let counter = 0;
+    
+    // 先收集所有音乐标记
+    const matches = [...text.matchAll(musicRegex)];
+    const uniqueFilenames = [...new Set(matches.map(m => m[1]))];
+    
+    // 预获取所有音乐URL
+    const urlMap: Record<string, string> = {};
+    await Promise.all(uniqueFilenames.map(async (filename) => {
+        const url = await resolveMusicFileUrl(filename);
+        if (url) {
+            urlMap[filename] = url;
+        }
+    }));
+    
+    // 替换占位符为自定义元素
+    const processedContent = text.replace(musicRegex, (_match, filename, customTitle) => {
+        const placeholder = `__MUSIC_PLACEHOLDER_${counter}__`;
+        const url = urlMap[filename] || '';
+        // 如果有自定义title就用自定义title，否则用文件名
+        const title = customTitle || filename.replace('.mp3', '');
+        musicMarkers.push({ filename, placeholder, url });
+        counter++;
+        // 替换为自定义元素标签
+        return `<inline-music-player src="${url}" title="${title}"></inline-music-player>`;
+    });
+    
+    return { content: processedContent, musicMarkers };
+}
+
 export const fetchFileContent = async (path: string): Promise<MarkdownContent | null> => {
     if (contentCache.has(path)) {
         return contentCache.get(path)!;
@@ -169,9 +227,12 @@ export const fetchFileContent = async (path: string): Promise<MarkdownContent | 
 
     try {
         loading.value = true;
-        const content = await readTextContent('novels', path);
+        const rawContent = await readTextContent('novels', path);
+        
+        // 先解析音乐标记（异步获取URL）
+        const { content: contentWithMarkers, musicMarkers } = await parseMusicMarkers(rawContent);
 
-        let html = await marked.parse(content, {
+        let html = await marked.parse(contentWithMarkers, {
             breaks: true,
             gfm: true,
         });
@@ -179,7 +240,11 @@ export const fetchFileContent = async (path: string): Promise<MarkdownContent | 
         html = await replaceMarkdownImageUrls(html, path);
 
         const title = path.split('/').pop()?.replace('.md', '') ?? path;
-        const result = { content: html, title };
+        const result = { 
+            content: html, 
+            title,
+            musicMarkers 
+        };
 
         contentCache.set(path, result);
         return result;
@@ -202,6 +267,7 @@ export const fileList = ref<ContentFileItem[]>([]);
 export const chapterGroups = ref<ChapterGroup[]>([]);
 export const selectedFile = ref<MarkdownContent | null>(null);
 export const loading = ref(false);
+export const contentRef = shallowRef<HTMLElement | null>(null);
 
 export const toggleGroup = (group: ChapterGroup) => {
     group.isExpanded = !group.isExpanded;
@@ -209,6 +275,10 @@ export const toggleGroup = (group: ChapterGroup) => {
 
 export default defineComponent({
     name: "Novels",
+
+    components: {
+        InlineMusicPlayer
+    },
 
     setup() {
         onMounted(fetchFiles);
@@ -220,6 +290,7 @@ export default defineComponent({
             loading,
             selectedFile,
             toggleGroup,
+            contentRef,
         };
     },
     methods: {

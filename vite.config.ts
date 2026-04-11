@@ -367,6 +367,10 @@ export default defineConfig(({ mode }) => {
     return {
         base: './',
         publicDir: 'public',
+        server: {
+            host: '0.0.0.0',
+            port: 5173,
+        },
         plugins: [vue(), createLocalContentPlugin(env, process.cwd())],
         build: {
             outDir: 'dist',

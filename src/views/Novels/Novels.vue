@@ -20,9 +20,7 @@
             </div>
         </div>
         <div class="n-main">
-            <div v-if="selectedFile" class="n-markdown-content">
-                <div v-html="selectedFile.content"></div>
-            </div>
+            <div v-if="selectedFile" class="n-markdown-content" ref="contentRef" v-html="selectedFile.content"></div>
             <div v-else class="n-placeholder">
                 请从左侧选择要阅读的小说
             </div>
