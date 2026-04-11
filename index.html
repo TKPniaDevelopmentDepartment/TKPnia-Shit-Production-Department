@@ -5,10 +5,28 @@
     <link rel="icon" type="image/svg+xml" href="./logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>你为什么在看这里?</title>
-    <script type="module" crossorigin src="./assets/index-Ctd2VAfq.js"></script>
-    <link rel="stylesheet" crossorigin href="./index.DsL9ixkU.css">
+    <!-- Sakana Widget -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sakana-widget@2.7.1/lib/sakana.min.css"/>
+    <style>
+      #sakana-widget {
+        position: fixed !important;
+        left: 20px !important;
+        bottom: 20px !important;
+        z-index: 9999 !important;
+      }
+    </style>
+    <script type="module" crossorigin src="./assets/index-De3467zG.js"></script>
+    <link rel="stylesheet" crossorigin href="./index.CmUe0A3q.css">
   </head>
   <body>
     <div id="app"></div>
+    <!-- Sakana Widget -->
+    <div id="sakana-widget"></div>
+    <script>
+      function initSakanaWidget() {
+        new SakanaWidget().mount('#sakana-widget');
+      }
+    </script>
+    <script async onload="initSakanaWidget()" src="https://cdn.jsdelivr.net/npm/sakana-widget@2.7.1/lib/sakana.min.js"></script>
   </body>
 </html>
