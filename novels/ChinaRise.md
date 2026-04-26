@@ -1,25 +1,25 @@
 # 中国崛起
 [music:建制派结束曲怒放的生命.mp3;title:怒放的生命]  
-![如果你能看到这个说明,那就是图片根本加载不出来](https://raw.githubusercontent.com/Plana-EpicTankCommander//main/images/隐忍.jpg)
+![如果你能看到这个说明,那就是图片根本加载不出来](https://raw.githubusercontent.com/Plana-EpicTankCommander/sth-ineed/main/images/隐忍.jpg)
 &emsp;当硝烟渐散，亚洲这片饱受苦难与摧残的土地，终于迎来了久违的宁静。在鲜血与战火余烬中仍屹立不倒的国家 不出所料地 中国 即是最后的胜利者。 
-![如果你能看到这个说明,那就是图片根本加载不出来](https://raw.githubusercontent.com/Plana-EpicTankCommander/sth ineed/main/images/隐忍.jpg)
+![如果你能看到这个说明,那就是图片根本加载不出来](https://raw.githubusercontent.com/Plana-EpicTankCommander/sth-ineed/main/images/隐忍.jpg)
 &emsp;当硝烟渐散，亚洲这片饱受苦难与摧残的土地，终于迎来了久违的宁静。在鲜血与战火余烬中仍屹立不倒的国家 不出所料地 中国 即是阅兵.jpg) 
 &emsp;1950年，没有人能想象得到新生的红色中国会具有派出军队前往朝鲜半岛的勇气，以及成功对抗以美国为首的强大联合国军的可能；在这之后，从喜马拉雅山脉到黑龙江畔，从越南丛林到东海岛礁，霸权和挑战者们仍一次次地为他们对中国的无知和轻视付出了代价。  
-![如果你能看到这个说明,那就是图片根本加载不出来](https://raw.githubusercontent.com/Plana-EpicTankCommander/sth ineed/main/images/隐忍.jpg)
+![如果你能看到这个说明,那就是图片根本加载不出来](https://raw.githubusercontent.com/Plana-EpicTankCommander/sth-ineed/main/images/隐忍.jpg)
 &emsp;当硝烟渐散，亚洲这片饱受苦难与摧残的土地，终于迎来了久违的宁静。在鲜血与战火余烬中仍屹立不倒的国家 不出所料地 中国 即是整装待发.jpg) 
 &emsp;中国无法阻挡的崛起日益成为敌人们的噩梦，并使得后者更加疯狂地用多种手段围剿中国。若不是这一切都试图置中国和其人民于死地，他们的困兽犹斗甚至都值得同情。即使如此，全中国紧密团结所进发出的磅礴伟力仍然能够冲破一切艰难险阻。不光PLA的军事神话得以续写，在接连两次的惊天大战中皆取得空前胜利，通过第四次工业革命，中国也成为了世界上最繁荣富裕的国家，其科学水平也迈入世界前列。  
-![如果你能看到这个说明,那就是图片根本加载不出来](https://raw.githubusercontent.com/Plana-EpicTankCommander/sth ineed/main/images/隐忍.jpg)
+![如果你能看到这个说明,那就是图片根本加载不出来](https://raw.githubusercontent.com/Plana-EpicTankCommander/sth-ineed/main/images/隐忍.jpg)
 &emsp;当硝烟渐散，亚洲这片饱受苦难与摧残的土地，终于迎来了久违的宁静。在鲜血与战火余烬中仍屹立不倒的国家 不出所料地 中国 即是大会堂.jpg) 
 &emsp;亲爱的玩家，在您的带领下，中华民族攀上了它悠久文明史中最新也是最辉煌的顶峰，而这个全世界最庞大政治组织更经由您之手变得更加坚不可摧。"中华民族从未距离它的伟大复兴如此之近过"。这项伟业如今已成现实，在未来的岁月中，中国的伟大征程也仍将继续.  
-![如果你能看到这个说明,那就是图片根本加载不出来](https://raw.githubusercontent.com/Plana-EpicTankCommander/sth ineed/main/隐忍.jpg)
+![如果你能看到这个说明,那就是图片根本加载不出来](https://raw.githubusercontent.com/Plana-EpicTankCommander/sth-ineed/main/images/隐忍.jpg)
 &emsp;当硝烟渐散，亚洲这片饱受苦难与摧残的土地，终于迎来了久违的宁静。在鲜血与战火余烬中仍屹立不倒的国家 不出所料地 中国 即是tfr.jpg) 
 &emsp;玩"烈焰升腾"，并希望您有着愉快的游戏体验！  
 &emsp;中国将繁荣昌盛！  
 &emsp;但中国的故事并未就此结束，她的旅程将在接下来的更新中继续，敬请期待战后内容！  
-![如果你能看到这个说明,那就是图片根本加载不出来](https://raw.githubusercontent.com/Plana-EpicTankCommander/sth ineed/main/隐忍.jpg)
+![如果你能看到这个说明,那就是图片根本加载不出来](https://raw.githubusercontent.com/Plana-EpicTankCommander/sth-ineed/main/images/隐忍.jpg)
 &emsp;当硝烟渐散，亚洲这片饱受苦难与摧残的土地，终于迎来了久违的宁静。在鲜血与战火余烬中仍屹立不倒的国家 不出所料地 中国 即是大亚洲战争.jpg) 
 
 &emsp;*作者：罗门圣徒，出处：bilibili*  
 
-![如果你能看到这个说明,那就是图片根本加载不出来](hhttps://raw.githubusercontent.com/Plana-EpicTankCommander/sth ineed/main/隐忍.jpg)
+![如果你能看到这个说明,那就是图片根本加载不出来](https://raw.githubusercontent.com/Plana-EpicTankCommander/sth-ineed/main/images/隐忍.jpg)
 &emsp;当硝烟渐散，亚洲这片饱受苦难与摧残的土地，终于迎来了久违的宁静。在鲜血与战火余烬中仍屹立不倒的国家 不出所料地 中国 即是调整航线.png) 
