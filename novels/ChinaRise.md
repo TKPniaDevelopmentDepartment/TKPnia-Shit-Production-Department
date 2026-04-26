@@ -1,6 +1,6 @@
 # 中国崛起
 [music:建制派结束曲怒放的生命.mp3;title:怒放的生命]  
-![如果你能看到这个说明,那就是图片根本加载不出来](https://raw.githubusercontent.com/Plana-EpicTankCommander/sth-ineed/main/images/隐忍.jpg)
+![如果你能看到这个说明,那就是图片根本加载不出来](https://github.com/TKPniaDevelopmentDepartment/TKPnia-Shit-Production-Department/blob/main/images/隐忍.jpg)
 &emsp;当硝烟渐散，亚洲这片饱受苦难与摧残的土地，终于迎来了久违的宁静。在鲜血与战火余烬中仍屹立不倒的国家 不出所料地 中国 即是最后的胜利者。 
 ![如果你能看到这个说明,那就是图片根本加载不出来](https://raw.githubusercontent.com/Plana-EpicTankCommander/sth-ineed/main/images/隐忍.jpg)
 &emsp;当硝烟渐散，亚洲这片饱受苦难与摧残的土地，终于迎来了久违的宁静。在鲜血与战火余烬中仍屹立不倒的国家 不出所料地 中国 即是阅兵.jpg) 
