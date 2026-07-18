@@ -82,6 +82,7 @@ html, body {
     transition: all var(--transition-speed) ease;
     font-size: 1rem;
     position: relative;
+    white-space: nowrap;
 }
 
 .nav-item:hover {
@@ -126,5 +127,46 @@ html, body {
 
 ::-webkit-scrollbar-thumb:hover {
     background: var(--accent-color);
+}
+
+/* ========== 移动端适配 ========== */
+@media (max-width: 768px) {
+    html, body {
+        overflow: visible;
+        overflow-x: hidden;
+    }
+
+    .app {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .nav {
+        padding: 0.5rem;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .nav-item {
+        flex: 0 0 auto;
+        padding: 0.6rem 0.8rem;
+        margin: 0 0.25rem;
+        font-size: 0.9rem;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+
+    .content {
+        padding: 0.5rem;
+        overflow: visible;
+    }
 }
 </style>
