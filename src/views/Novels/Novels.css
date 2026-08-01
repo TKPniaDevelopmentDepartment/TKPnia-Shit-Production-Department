@@ -74,6 +74,32 @@
     max-width: 800px;
     margin: 0 auto;
     line-height: 1.6;
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+.n-markdown-content img,
+.n-markdown-content video,
+.n-markdown-content iframe {
+    max-width: 100%;
+    height: auto;
+}
+
+.n-markdown-content pre {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: pre;
+}
+
+.n-markdown-content code {
+    overflow-wrap: normal;
+    word-break: normal;
+}
+
+.n-markdown-content table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
 }
 
 .n-placeholder {
@@ -99,7 +125,7 @@
 }
 
 /* 响应式设计 */
-@media (min-width: 1024px) {
+@media (min-width: 769px) {
     .n-container {
         padding: 1.5rem;
         gap: 2rem;
@@ -118,21 +144,62 @@
     }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 768px) {
     .n-container {
-        padding: 1.25rem;
-        gap: 1.5rem;
+        flex-direction: column;
+        padding: 0;
+        height: auto;
+        min-height: 100%;
     }
 
     .n-sidebar {
-        width: 400px;
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+        padding: 10px;
+        max-height: 50vh;
+        overflow-y: auto;
+        flex-shrink: 0;
+    }
+
+    .n-sidebar h2 {
+        font-size: 1.1rem;
+        text-align: center;
+    }
+
+    .n-main {
+        min-width: 0;
+        padding: 12px;
+        overflow-y: visible;
     }
 
     .n-file-list {
-        max-height: calc(100vh - 130px);
+        margin-top: 10px;
+    }
+
+    .n-file-item {
+        padding: 10px 12px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        font-size: 0.95rem;
     }
 
     .n-markdown-content {
-        padding: 2rem;
+        padding: 0.5rem;
+        line-height: 1.8;
+        font-size: 1rem;
+        max-width: 100%;
+    }
+
+    .n-placeholder {
+        font-size: 0.95rem;
+        padding: 2rem 1rem;
+        text-align: center;
+    }
+
+    .n-group-header {
+        padding: 10px 12px;
+        min-height: 44px;
     }
 }

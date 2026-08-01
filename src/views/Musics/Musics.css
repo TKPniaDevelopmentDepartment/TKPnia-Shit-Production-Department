@@ -247,15 +247,61 @@
 @media (max-width: 768px) {
     .m-container {
         flex-direction: column;
+        height: auto;
+        min-height: 100%;
     }
 
     .m-sidebar {
         width: 100%;
         border-right: none;
         border-bottom: 1px solid #e0e0e0;
+        max-height: 40vh;
+        overflow-y: auto;
+    }
+
+    .m-sidebar h2 {
+        font-size: 1.2rem;
+        text-align: center;
+    }
+
+    .m-main {
+        min-width: 0;
+        padding: 15px;
     }
 
     .m-player-content {
         padding: 15px;
+        max-width: 100%;
     }
-} 
+
+    .m-player-info h3 {
+        font-size: 1.1rem;
+    }
+
+    .m-file-item {
+        padding: 12px 15px;
+        min-height: 44px;
+    }
+
+    .m-control-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .m-control-btn i {
+        font-size: 1.2em;
+    }
+
+    .m-volume-control {
+        flex-wrap: wrap;
+    }
+
+    .m-progress-container {
+        min-width: 0;
+    }
+
+    .m-placeholder {
+        font-size: 0.95rem;
+        padding: 2rem 1rem;
+    }
+}

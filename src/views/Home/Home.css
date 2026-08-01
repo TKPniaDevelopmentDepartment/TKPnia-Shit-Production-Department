@@ -80,12 +80,61 @@
 }
 
 /* 响应式设计 */
-@media (max-width: 1024px) {
+@media (min-width: 769px) and (max-width: 1024px) {
     .image-container {
         height: min(600px, 75vh);
     }
 
     .rmr {
         width: min(85%, 500px);
+    }
+}
+
+@media (max-width: 768px) {
+    .title:nth-child(1) {
+        font-size: 1.5rem;
+        margin-top: 1rem;
+        padding: 0 0.5rem;
+    }
+
+    .title:nth-child(2) {
+        font-size: 1.1rem;
+    }
+
+    .title:nth-child(3) {
+        font-size: 0.9rem;
+    }
+
+    .image-container {
+        height: auto;
+        min-height: 200px;
+        max-height: 50vh;
+        margin: 1rem auto 2rem;
+        padding: 0 0.5rem;
+    }
+
+    .rmr {
+        width: 90%;
+        margin: 0 auto;
+    }
+
+    .link-container {
+        position: relative;
+        bottom: auto;
+        right: auto;
+        align-items: center;
+        padding: 1rem;
+        margin-bottom: calc(2rem + env(safe-area-inset-bottom));
+    }
+
+    .vm50 {
+        padding: 0.8rem 1.5rem;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 80%;
+        max-width: 280px;
+        font-size: 1rem;
     }
 }
